@@ -34,15 +34,18 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
-    build: ./frontend
+    build: .
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - INTERNAL_API_URL=http://backend:8000
     volumes:
-      - ./frontend:/app
+      - .:/app
       - /app/node_modules
     command: npm run dev
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

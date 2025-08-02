@@ -33,23 +33,51 @@ app.add_middleware(
 )
 
 @app.post("/auth/login")
-async def login(request: LoginRequest, response: Response, db: Session = Depends(get_db)):
+async def login(response: Response, request: Request):
     """Simple dev-only authentication"""
-    dev_password = os.getenv("DEV_PASSWORD", "haslo123")
-    
-    if request.password != dev_password:
-        raise HTTPException(status_code=401, detail="Invalid password")
-    
-    session_token = create_session()
-    response.set_cookie(
-        key="session",
-        value=session_token,
-        httponly=True,
-        secure=False,  # Dev only
-        samesite="lax"
-    )
-    
-    return {"success": True}
+    try:
+        dev_password = os.getenv("DEV_PASSWORD", "haslo123")
+        logger.info(f"Login attempt from {request.client.host if request.client else 'unknown'}")
+        
+        # Handle both JSON and form data
+        password = None
+        content_type = request.headers.get("content-type", "")
+        
+        if "application/json" in content_type:
+            data = await request.json()
+            password = data.get("password")
+            logger.info("Received JSON login request")
+        else:
+            # Form data
+            form = await request.form()
+            password = form.get("password")
+            logger.info("Received form data login request")
+        
+        if not password:
+            logger.warning("Login attempt with missing password")
+            raise HTTPException(status_code=400, detail="Password is required")
+            
+        if password != dev_password:
+            logger.warning("Login attempt with incorrect password")
+            raise HTTPException(status_code=401, detail="Invalid password")
+        
+        session_token = create_session()
+        response.set_cookie(
+            key="session",
+            value=session_token,
+            httponly=True,
+            secure=False,  # Dev only
+            samesite="lax"
+        )
+        
+        logger.info("Login successful")
+        return {"success": True}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error during login: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/import/url")
 async def import_url(
