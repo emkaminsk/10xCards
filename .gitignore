@@ -81,3 +81,6 @@ coverage/
 *.temp
 .tmp/
 .temp/
+
+# Tool-specific directories (keep .cursor rules as exception)
+.bolt/
