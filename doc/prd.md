@@ -67,10 +67,10 @@ Manualne tworzenie wysokiej jakości fiszek edukacyjnych jest procesem niezwykle
 
 ### 3.6 Architektura techniczna
 - Frontend: React
-- Backend: FastAPI
+- Backend: FastAPI 
 - Baza danych: PostgreSQL
 - Konteneryzacja: Docker Compose
-- Analiza językowa: spaCy (es_core_news_sm)
+- Analiza językowa: spaCy (es_core_news_sm), LLM. Podział zadań: tagowanie POS spaCy, generacja kart i deduplikacja semantyczna LLM.
 
 ## 4. Granice produktu
 
@@ -88,7 +88,7 @@ Manualne tworzenie wysokiej jakości fiszek edukacyjnych jest procesem niezwykle
 ### 4.2 Ograniczenia wydajnościowe
 - Maksymalnie 100,000 fiszek w bazie danych
 - Jeden użytkownik systemu
-- Średni czas odpowiedzi backendu poniżej 400ms
+- CRUD <400 ms, operacje AI/parsing asynchronicznie z timeout 10s
 - Lokalne uruchomienie w środowisku Docker
 
 ### 4.3 Ograniczenia funkcjonalne
