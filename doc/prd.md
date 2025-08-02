@@ -66,11 +66,7 @@ Manualne tworzenie wysokiej jakości fiszek edukacyjnych jest procesem niezwykle
 - Brak funkcjonalności rejestracji nowych użytkowników
 
 ### 3.6 Architektura techniczna
-- Frontend: React
-- Backend: FastAPI 
-- Baza danych: PostgreSQL
-- Konteneryzacja: Docker Compose
-- Analiza językowa: spaCy (es_core_news_sm), LLM. Podział zadań: tagowanie POS spaCy, generacja kart i deduplikacja semantyczna LLM.
+Opisany w dokumencie @stack.md
 
 ## 4. Granice produktu
 
@@ -333,5 +329,8 @@ Manualne tworzenie wysokiej jakości fiszek edukacyjnych jest procesem niezwykle
 - System obsługuje typowe scenariusze użycia bez błędów
 
 #### 6.4.3 Harmonogram
-- Planowane wydanie MVP: 4 tygodnie od rozpoczęcia implementacji
+Faza 1: Parser + LLM + prosty frontend (tygodnie 1-4)
+Faza 2: System powtórek (tygodnie 5-6)
+Faza 3: (post-MVP) spaCy, lepszy frontend
+- Planowane wydanie MVP: 6 tygodni od rozpoczęcia implementacji
 - Wszystkie kryteria wydania spełnione przed datą publikacji 
