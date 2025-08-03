@@ -115,6 +115,14 @@ Opisany w dokumencie @stack.md
 - Pobrana treść jest przekazywana do modułu AI
 - Użytkownik widzi potwierdzenie pomyślnego pobrania treści
 
+### US-002.b: Automatyczne przekierowanie do propozycji fiszek
+  - Po pomyślnym zaimportowaniu użytkownik powinien zostać automatycznie
+  przekierowany do przeglądu wygenerowanych propozycji fiszek
+  - System powinien przekazać identyfikator sesji importu do strony z propozycjami
+  - Wyczyść stany ładowania i wskaźniki postępu podczas przejścia, pokaż postęp generowania fiszek
+  - Uruchom generowanie fiszek przez AI
+  - Po zakończeniu generowania przeładuj stronę i wyświetl fiszki
+
 ### US-003: Generowanie fiszek przez AI
 **Tytuł:** Automatyczne tworzenie propozycji fiszek  
 **Opis:** Jako student chcę, aby AI automatycznie wygenerowało fiszki na podstawie pobranego tekstu, dostosowane do mojego poziomu hiszpańskiego.  

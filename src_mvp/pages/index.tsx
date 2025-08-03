@@ -35,7 +35,7 @@ export default function Home() {
           container.innerHTML = `
             <nav class="nav">
               <div class="nav-container">
-                <div class="nav-title">10xCards PoC</div>
+                <div class="nav-title">10xCards MVP</div>
                 <div class="nav-links">
                   <a href="/import" class="nav-link">Importar</a>
                   <a href="/review" class="nav-link">Repasar</a>
