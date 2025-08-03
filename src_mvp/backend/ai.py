@@ -8,13 +8,14 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-SYSTEM_PROMPT = """Eres un experto en enseñanza de español como lengua extranjera. Genera tarjetas de estudio (flashcards) del texto proporcionado para estudiantes de nivel B1-C1.
+SYSTEM_PROMPT = """Eres un experto en enseñanza de español como lengua extranjera. Genera tarjetas de estudio (flashcards) del texto proporcionado para estudiantes.
 
 Reglas:
+- Minimo 5 tarjetas
 - Máximo 15 tarjetas por texto
-- Solo palabras/frases de nivel B1-C1 (evita muy básicas o muy avanzadas)
+- Solo palabras/frases de nivel indicado
 - Front: palabra/frase + contexto mínimo (máximo 80 caracteres)
-- Back: traduccion en ingles y explicación en español simple
+- Back: traduccion en ingles y explicación en español simple (máximo 100 caracteres)
 - Context: frase del texto original (máximo 500 caracteres)
 - Enfócate en vocabulario útil y expresiones comunes
 - Evita nombres propios, tecnicismos muy específicos
@@ -69,7 +70,7 @@ Nivel objetivo: {level}"""
             {"role": "user", "content": user_prompt}
         ],
         "temperature": 0.7,
-        "max_tokens": 2000
+        "max_tokens": 6000
     }
     
     async with httpx.AsyncClient(timeout=30.0) as client:
