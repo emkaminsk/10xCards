@@ -22,7 +22,7 @@ export default function Import() {
                     <div style="color: #0ea5e9; font-size: 1.25rem;">✓</div>
                     <div>
                       <h3 style="margin: 0; color: #0ea5e9;">Artículo importado correctamente</h3>
-                      <p style="margin: 0; color: #0369a1;">Se generaron ${response.word_count} palabras. Procesando propuestas de tarjetas...</p>
+                      <p style="margin: 0; color: #0369a1;">Se procesaron ${response.word_count} palabras. Generando tarjetas con IA...</p>
                     </div>
                   </div>
                   <div style="text-align: center;">
@@ -33,10 +33,10 @@ export default function Import() {
               `
             }
             
-            // Redirect to proposals page after 2 seconds
+            // Redirect to proposals page after 3 seconds (allowing time for AI generation)
             setTimeout(() => {
               router.push(`/proposals?session_id=${response.session_id}`)
-            }, 2000)
+            }, 3000)
           }
         } catch (e) {
           console.error('Error parsing import response:', e)

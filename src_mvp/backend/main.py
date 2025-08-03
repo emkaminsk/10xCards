@@ -85,7 +85,7 @@ async def import_url(
     db: Session = Depends(get_db),
     user_id: str = Depends(verify_session)
 ):
-    """Parse content from URL"""
+    """Parse content from URL and automatically generate flashcards"""
     try:
         # Log raw request details for debugging
         logger.info(f"Import URL request from {request.client.host if request.client else 'unknown'}")
@@ -139,13 +139,63 @@ async def import_url(
         
         word_count = len(content.split())
         
+        # Automatically generate flashcards using AI
+        try:
+            logger.info(f"Starting AI generation for session {session.id}")
+            
+            # Get existing cards for deduplication
+            existing_cards = db.query(Card).all()
+            existing_fronts = {card.front.lower() for card in existing_cards}
+            
+            # Get existing proposals for this session
+            existing_proposals = db.query(CardProposal).filter(
+                CardProposal.session_id == session.id
+            ).all()
+            existing_proposal_fronts = {prop.front.lower() for prop in existing_proposals}
+            
+            # Generate cards using default level A2-B2
+            generated_cards = await generate_cards(
+                content, 
+                "A2-B2",  # Default proficiency level
+                existing_fronts | existing_proposal_fronts
+            )
+            
+            # Save as proposals
+            proposals_created = 0
+            for card_data in generated_cards:
+                proposal = CardProposal(
+                    session_id=session.id,
+                    front=card_data["front"],
+                    back=card_data["back"],
+                    context=card_data["context"]
+                )
+                db.add(proposal)
+                proposals_created += 1
+            
+            db.commit()
+            logger.info(f"Successfully generated {proposals_created} card proposals for session {session.id}")
+            
+        except ValueError as ai_error:
+            if "not configured" in str(ai_error):
+                logger.error(f"AI service not configured for session {session.id}: {str(ai_error)}")
+            elif "timeout" in str(ai_error).lower():
+                logger.error(f"AI service timeout for session {session.id}: {str(ai_error)}")
+            else:
+                logger.error(f"AI generation failed for session {session.id}: {str(ai_error)}")
+            # Continue without failing the entire import - proposals page will show empty state
+            proposals_created = 0
+        except Exception as ai_error:
+            logger.error(f"Unexpected error during AI generation for session {session.id}: {str(ai_error)}", exc_info=True)
+            # Continue without failing the entire import - proposals page will show empty state
+            proposals_created = 0
+        
         response = ImportUrlResponse(
             session_id=str(session.id),
             content=content[:1000] + "..." if len(content) > 1000 else content,
             word_count=word_count
         )
         
-        logger.info(f"Successfully processed URL, returning response with {word_count} words")
+        logger.info(f"Successfully processed URL with {proposals_created} proposals generated")
         return response
         
     except HTTPException:

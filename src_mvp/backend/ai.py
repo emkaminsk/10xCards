@@ -35,7 +35,8 @@ async def generate_cards(content: str, level: str, existing_fronts: Set[str]) ->
     
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        raise ValueError("OPENROUTER_API_KEY not configured")
+        logger.error("OPENROUTER_API_KEY environment variable not set")
+        raise ValueError("AI service not configured. Please set OPENROUTER_API_KEY environment variable.")
     
     # Truncate content if too long
     if len(content) > 3000:

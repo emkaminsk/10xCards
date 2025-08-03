@@ -8,20 +8,36 @@ export default function Proposals() {
 
   useEffect(() => {
     if (session_id) {
-      // Load proposals via HTMX when component mounts
+      // Load proposals with retry mechanism for AI generation
       const container = document.getElementById('proposals-container')
       if (container) {
         container.innerHTML = '<div class="loading"></div><p>Cargando propuestas...</p>'
-        fetch(`/api/cards/proposals?session_id=${session_id}`, {
-          credentials: 'include'
-        })
-        .then(response => response.json())
-        .then(data => {
-          renderProposals(data.proposals, container)
-        })
-        .catch(() => {
-          container.innerHTML = '<div class="error">Error al cargar propuestas</div>'
-        })
+        
+        const loadProposals = async (retryCount = 0) => {
+          try {
+            const response = await fetch(`/api/cards/proposals?session_id=${session_id}`, {
+              credentials: 'include'
+            })
+            const data = await response.json()
+            
+            // If no proposals and we haven't retried much, wait and try again
+            if (data.proposals.length === 0 && retryCount < 3) {
+              container.innerHTML = '<div class="loading"></div><p>Generando tarjetas con IA...</p>'
+              setTimeout(() => loadProposals(retryCount + 1), 2000)
+              return
+            }
+            
+            renderProposals(data.proposals, container)
+          } catch (error) {
+            if (retryCount < 2) {
+              setTimeout(() => loadProposals(retryCount + 1), 2000)
+            } else {
+              container.innerHTML = '<div class="error">Error al cargar propuestas</div>'
+            }
+          }
+        }
+        
+        loadProposals()
       }
     }
   }, [session_id])
@@ -30,7 +46,18 @@ export default function Proposals() {
     if (proposals.length === 0) {
       container.innerHTML = `
         <div style="text-align: center; padding: 2rem; color: #6b7280;">
-          No hay propuestas disponibles
+          <h3 style="color: #374151; margin-bottom: 1rem;">No se generaron tarjetas</h3>
+          <p style="margin-bottom: 1.5rem;">No se pudieron generar tarjetas del contenido importado. Esto puede ocurrir si:</p>
+          <ul style="text-align: left; max-width: 400px; margin: 0 auto 1.5rem;">
+            <li>El texto no contiene vocabulario apropiado para el nivel A2-B2</li>
+            <li>Hubo un error con el servicio de IA</li>
+            <li>El contenido ya existe en tu colección</li>
+          </ul>
+          <a href="/import">
+            <button class="button">
+              Intentar con Otro Artículo
+            </button>
+          </a>
         </div>
       `
       return
