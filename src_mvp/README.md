@@ -26,9 +26,19 @@ cp .env.example .env
 
 2. **Configurar variables de entorno** en `.env`:
 ```
+# AI Configuration
+AI_MODEL_NAME=anthropic/claude-3-haiku
 OPENROUTER_API_KEY=tu_clave_de_openrouter
+
+# Authentication
 DEV_PASSWORD=haslo123
+
+# Database Configuration
 DATABASE_URL=postgresql://user:pass@db:5432/cards
+
+# Frontend Configuration
+NEXT_PUBLIC_API_URL=http://localhost:8000
+INTERNAL_API_URL=http://backend:8000
 ```
 
 3. **Ejecutar**:

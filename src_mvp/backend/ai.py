@@ -8,16 +8,17 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-SYSTEM_PROMPT = """Eres un experto en enseñanza de español como lengua extranjera. Genera tarjetas de estudio (flashcards) del texto proporcionado para estudiantes de nivel A2-B2.
+SYSTEM_PROMPT = """Eres un experto en enseñanza de español como lengua extranjera. Genera tarjetas de estudio (flashcards) del texto proporcionado para estudiantes de nivel B1-C1.
 
 Reglas:
 - Máximo 15 tarjetas por texto
-- Solo palabras/frases de nivel A2-B2 (evita muy básicas o muy avanzadas)
+- Solo palabras/frases de nivel B1-C1 (evita muy básicas o muy avanzadas)
 - Front: palabra/frase + contexto mínimo (máximo 80 caracteres)
-- Back: traducción/explicación en español simple
+- Back: traduccion en ingles y explicación en español simple
 - Context: frase del texto original (máximo 500 caracteres)
 - Enfócate en vocabulario útil y expresiones comunes
 - Evita nombres propios, tecnicismos muy específicos
+- Cada tarjeta debe ser muy distinta de las otras
 
 Formato JSON:
 {
@@ -30,13 +31,19 @@ Formato JSON:
   ]
 }"""
 
-async def generate_cards(content: str, level: str, existing_fronts: Set[str]) -> List[Dict[str, str]]:
+async def generate_cards(content: str, level: str, existing_fronts: Set[str], model_name: str = None) -> List[Dict[str, str]]:
     """Generate flashcards using OpenRouter AI"""
     
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
         logger.error("OPENROUTER_API_KEY environment variable not set")
         raise ValueError("AI service not configured. Please set OPENROUTER_API_KEY environment variable.")
+    
+    # Get model name from parameter or environment variable
+    if model_name is None:
+        model_name = os.getenv("AI_MODEL_NAME", "anthropic/claude-3-haiku")
+    
+    logger.info(f"🤖 AI Generation - Using model: {model_name}")
     
     # Truncate content if too long
     if len(content) > 3000:
@@ -56,7 +63,7 @@ Nivel objetivo: {level}"""
     }
     
     payload = {
-        "model": "anthropic/claude-3-haiku",
+        "model": model_name,
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt}
@@ -91,7 +98,7 @@ Nivel objetivo: {level}"""
                         filtered_cards.append(card)
                         existing_fronts.add(front_lower)
                 
-                logger.info(f"Generated {len(filtered_cards)} unique cards from {len(cards)} total")
+                logger.info(f"🤖 AI Generation - Generated {len(filtered_cards)} unique cards from {len(cards)} total using {model_name}")
                 return filtered_cards[:15]  # Limit to 15 cards
                 
             except json.JSONDecodeError as e:

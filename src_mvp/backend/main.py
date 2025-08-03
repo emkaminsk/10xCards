@@ -141,7 +141,8 @@ async def import_url(
         
         # Automatically generate flashcards using AI
         try:
-            logger.info(f"Starting AI generation for session {session.id}")
+            ai_model = os.getenv("AI_MODEL_NAME", "anthropic/claude-3-haiku")
+            logger.info(f"🚀 Starting AI generation for session {session.id} using model: {ai_model}")
             
             # Get existing cards for deduplication
             existing_cards = db.query(Card).all()
@@ -157,7 +158,8 @@ async def import_url(
             generated_cards = await generate_cards(
                 content, 
                 "A2-B2",  # Default proficiency level
-                existing_fronts | existing_proposal_fronts
+                existing_fronts | existing_proposal_fronts,
+                model_name=None  # Use AI_MODEL_NAME from environment
             )
             
             # Save as proposals
@@ -173,7 +175,7 @@ async def import_url(
                 proposals_created += 1
             
             db.commit()
-            logger.info(f"Successfully generated {proposals_created} card proposals for session {session.id}")
+            logger.info(f"✅ Successfully generated {proposals_created} card proposals for session {session.id} using model: {ai_model}")
             
         except ValueError as ai_error:
             if "not configured" in str(ai_error):
@@ -212,6 +214,9 @@ async def generate_ai_cards(
 ):
     """Generate flashcards using AI"""
     try:
+        ai_model = os.getenv("AI_MODEL_NAME", "anthropic/claude-3-haiku")
+        logger.info(f"🚀 Starting AI generation for session {request.session_id} using model: {ai_model}")
+        
         # Get existing cards for deduplication
         existing_cards = db.query(Card).all()
         existing_fronts = {card.front.lower() for card in existing_cards}
@@ -226,7 +231,8 @@ async def generate_ai_cards(
         generated_cards = await generate_cards(
             request.content, 
             request.level,
-            existing_fronts | existing_proposal_fronts
+            existing_fronts | existing_proposal_fronts,
+            model_name=None  # Use AI_MODEL_NAME from environment
         )
         
         # Save as proposals
@@ -242,6 +248,7 @@ async def generate_ai_cards(
             proposals.append(proposal)
         
         db.commit()
+        logger.info(f"✅ Successfully generated {len(proposals)} card proposals for session {request.session_id} using model: {ai_model}")
         
         return GenerateCardsResponse(
             cards=[
