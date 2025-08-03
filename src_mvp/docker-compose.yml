@@ -3,6 +3,12 @@ version: '3.8'
 services:
   db:
     image: postgres:15
+    mem_limit: 512m
+    memswap_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     environment:
       POSTGRES_DB: cards
       POSTGRES_USER: user
@@ -20,6 +26,12 @@ services:
 
   backend:
     build: ./backend
+    mem_limit: 1g
+    memswap_limit: 1g
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     ports:
       - "8000:8000"
     depends_on:
@@ -35,6 +47,12 @@ services:
 
   frontend:
     build: .
+    mem_limit: 1g
+    memswap_limit: 1g
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     ports:
       - "3000:3000"
     environment:
