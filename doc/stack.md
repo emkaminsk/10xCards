@@ -11,7 +11,7 @@
 
 - baza danych PostgreSQL. Schemat DB (tabele cards, reviews, boxes, stats).
 - NLP robiony hybrydowo z wykorzystaniem spaCy oraz LLM (w razie potrzeby)
-- backend w Python 3.13 z FastAPI
+- backend w Python 3.13 z FastAPI, Pydantic
 - parser treści z internetu: Python (httpx + selectolax/readability + timeouts + SSRF guard).
 - autentykacja: hash (argon2/bcrypt), sesja HTTP-only, prosty middleware w FastAPI, trzymaniu kluczy OpenRouter tylko po stronie BE i rate limiting/throttling
 - minimalny monitoring czasów odpowiedzi i błędów w logach BE

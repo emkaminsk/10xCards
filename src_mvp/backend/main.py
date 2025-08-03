@@ -81,31 +81,78 @@ async def login(response: Response, request: Request):
 
 @app.post("/import/url")
 async def import_url(
-    request: ImportUrlRequest,
+    request: Request,
     db: Session = Depends(get_db),
     user_id: str = Depends(verify_session)
 ):
     """Parse content from URL"""
     try:
-        content = await parse_url(request.url)
+        # Log raw request details for debugging
+        logger.info(f"Import URL request from {request.client.host if request.client else 'unknown'}")
+        logger.info(f"Request headers: {dict(request.headers)}")
+        
+        content_type = request.headers.get("content-type", "").lower()
+        logger.info(f"Content-Type: {content_type}")
+        
+        # Parse request data based on content type
+        request_data = {}
+        try:
+            if "application/json" in content_type:
+                request_data = await request.json()
+                logger.info(f"Parsed JSON data: {request_data}")
+            else:
+                # Handle form data (including application/x-www-form-urlencoded)
+                form_data = await request.form()
+                request_data = dict(form_data)
+                logger.info(f"Parsed form data: {request_data}")
+        except Exception as parse_error:
+            logger.error(f"Failed to parse request body: {str(parse_error)}")
+            raise HTTPException(status_code=422, detail=f"Invalid request format: {str(parse_error)}")
+        
+        # Validate required fields
+        if "url" not in request_data:
+            logger.error("Missing 'url' field in request")
+            raise HTTPException(status_code=422, detail="Missing required field 'url'")
+        
+        url = request_data["url"]
+        if not url or not isinstance(url, str):
+            logger.error(f"Invalid URL value: {url}")
+            raise HTTPException(status_code=422, detail="URL must be a non-empty string")
+        
+        # Validate URL format
+        if not (url.startswith("http://") or url.startswith("https://")):
+            logger.error(f"Invalid URL format: {url}")
+            raise HTTPException(status_code=422, detail="URL must start with http:// or https://")
+        
+        logger.info(f"Processing URL: {url}")
+        
+        # Parse the URL content
+        content = await parse_url(url)
+        logger.info(f"Successfully parsed URL, content length: {len(content)} characters")
         
         # Create import session
         session = ImportSession()
         db.add(session)
         db.commit()
         db.refresh(session)
+        logger.info(f"Created import session with ID: {session.id}")
         
         word_count = len(content.split())
         
-        return ImportUrlResponse(
+        response = ImportUrlResponse(
             session_id=str(session.id),
             content=content[:1000] + "..." if len(content) > 1000 else content,
             word_count=word_count
         )
         
+        logger.info(f"Successfully processed URL, returning response with {word_count} words")
+        return response
+        
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error parsing URL {request.url}: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"Failed to parse URL: {str(e)}")
+        logger.error(f"Unexpected error processing URL import: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @app.post("/ai/generate")
 async def generate_ai_cards(
