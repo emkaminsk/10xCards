@@ -2,7 +2,7 @@ import httpx
 import json
 import os
 import logging
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ Formato JSON:
   ]
 }"""
 
-async def generate_cards(content: str, level: str, existing_fronts: Set[str], model_name: str = None) -> List[Dict[str, str]]:
+async def generate_cards(content: str, level: str, existing_fronts: Set[str], model_name: Optional[str] = None) -> List[Dict[str, str]]:
     """Generate flashcards using OpenRouter AI"""
     
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -46,9 +46,10 @@ async def generate_cards(content: str, level: str, existing_fronts: Set[str], mo
     
     logger.info(f"🤖 AI Generation - Using model: {model_name}")
     
-    # Truncate content if too long
-    if len(content) > 3000:
-        content = content[:3000] + "..."
+    # Truncate content if too long to avoid timeouts
+    if len(content) > 2000:
+        content = content[:2000] + "..."
+        logger.info(f"Content truncated to 2000 characters to avoid timeout")
     
     user_prompt = f"""Genera flashcards del siguiente texto en español:
 
@@ -70,10 +71,10 @@ Nivel objetivo: {level}"""
             {"role": "user", "content": user_prompt}
         ],
         "temperature": 0.7,
-        "max_tokens": 6000
+        "max_tokens": 3000
     }
     
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=10.0) as client:
         try:
             response = await client.post(OPENROUTER_API_URL, headers=headers, json=payload)
             response.raise_for_status()
@@ -108,10 +109,15 @@ Nivel objetivo: {level}"""
                 raise ValueError("AI returned invalid JSON response")
                 
         except httpx.HTTPStatusError as e:
-            logger.error(f"OpenRouter API error: {e.response.status_code} - {e.response.text}")
-            raise ValueError(f"AI service error: {e.response.status_code}")
+            if e.response.status_code == 408:
+                logger.error(f"OpenRouter timeout (408) for model: {model_name} - {e.response.text}")
+                raise ValueError("OpenRouter service timeout - try again or use a different model")
+            else:
+                logger.error(f"OpenRouter API error: {e.response.status_code} - {e.response.text}")
+                raise ValueError(f"AI service error: {e.response.status_code}")
         except httpx.TimeoutException:
-            raise ValueError("AI service timeout")
+            logger.error(f"AI request timeout after 10 seconds for model: {model_name}")
+            raise ValueError("AI service timeout after 10 seconds")
         except Exception as e:
             logger.error(f"Unexpected error calling AI service: {e}")
             raise ValueError(f"AI service error: {str(e)}")

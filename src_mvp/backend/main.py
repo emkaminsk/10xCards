@@ -182,6 +182,7 @@ async def import_url(
                 logger.error(f"AI service not configured for session {session.id}: {str(ai_error)}")
             elif "timeout" in str(ai_error).lower():
                 logger.error(f"AI service timeout for session {session.id}: {str(ai_error)}")
+                logger.info(f"Suggestion: Try again or consider switching to a different model via AI_MODEL_NAME in .env")
             else:
                 logger.error(f"AI generation failed for session {session.id}: {str(ai_error)}")
             # Continue without failing the entire import - proposals page will show empty state
