@@ -40,7 +40,8 @@ git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | \
   ```
 
 Ten sam dla Windows
-    ``` bash
+
+  ``` bash
     git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | 
   Where-Object { $_ -match '\S' } | 
   Where-Object { $_ -notmatch "" } | 
@@ -51,8 +52,9 @@ Ten sam dla Windows
   ```
 
 ## Najczęściej modyfikowane moduły
-    ``` bash
-git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | \
+
+  ``` bash
+  git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | \
   grep -vE "${EXCLUDE_PATTERN_GREP:-^$}" | \
   grep '.' | \
   awk -F/ -v OFS=/ 'NF > 1 {$NF = ""; print $0 } NF <= 1 { print "." }' | \
@@ -66,8 +68,9 @@ git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | \
   ```
 
 Windows
-    ``` bash
-git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | 
+
+  ``` bash
+  git log --since="1 year ago" --pretty=format:"" --name-only --no-merges | 
   Where-Object { $_ -match '\S' } | 
   Where-Object { $_ -notmatch "(package\.json$|package-lock\.json$|yarn\.lock$|^node_modules/|^dist/|^build/|\.log$|\.svg$|\.png$|\.ico$|\.map$|\.d\.ts$|README\.md$|\.gitignore$|CHANGELOG\.md$|LICENSE$)" } | 
   ForEach-Object {
@@ -82,12 +85,12 @@ git log --since="1 year ago" --pretty=format:"" --name-only --no-merges |
   Sort-Object -Property Count -Descending | 
   Select-Object -First 10 | 
   ForEach-Object { "$($_.Name): $($_.Count) changes" }
-
   ```
 
 ## Analiza kontrybutorów
-``` bash
-git log --since="1 year ago" --pretty=format:"%an <%ae>" --no-merges |\
+
+  ``` bash
+  git log --since="1 year ago" --pretty=format:"%an <%ae>" --no-merges |\
   sort |\
   uniq -c |\
   sort -nr |\
