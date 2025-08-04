@@ -56,7 +56,7 @@ export default function Import() {
     <div>
       <nav className="nav">
         <div className="nav-container">
-          <Link href="/" className="nav-title">10xCards MVP</Link>
+          <Link href="/" className="nav-title">10xCards PoC</Link>
           <div className="nav-links">
             <Link href="/import" className="nav-link active">Importar</Link>
             <Link href="/review" className="nav-link">Repasar</Link>

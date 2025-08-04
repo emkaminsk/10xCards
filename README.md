@@ -20,7 +20,7 @@ A web application that generates and manages high‑quality educational flashcar
 - Achieve high user acceptance of AI‑generated cards.
 - Maintain a smooth local developer experience with Docker Compose.
 
-### Core capabilities (MVP)
+### Core capabilities (PoC)
 - AI card generation from web content with context and tags.
 - Manual card CRUD.
 - Browse, filter, search cards.
@@ -39,7 +39,7 @@ For architectural stack details, see [doc/stack.md](doc/stack.md).
 
 ### Frontend
 - Next.js 14
-- React 18 (HTML/HTMLX in MVP; migration to React 19 planned in Phase 3)
+- React 18 (HTML/HTMLX in PoC; migration to React 19 planned in Phase 3)
 - TypeScript 5
 - CSS Modules
 
@@ -58,23 +58,23 @@ For architectural stack details, see [doc/stack.md](doc/stack.md).
 
 ### CI/CD and Hosting
 - GitHub Actions for pipelines
-  - MVP pipeline (local): unit tests, build images
+  - PoC pipeline (local): unit tests, build images
   - Target pipeline: unit tests, build images, push to GHCR, deploy via SSH, DB migrations, smoke tests
-- Local MVP: Docker Compose
+- Local PoC: Docker Compose
 - Target production: DigitalOcean VPS using Docker Compose
 
 ## Getting started locally
 
 ### Prerequisites
-- Node.js 22.14.0 (nvm recommended; see [.nvmrc](src_mvp/frontend/.nvmrc))
+- Node.js 22.14.0 (nvm recommended; see [.nvmrc](src_poc/frontend/.nvmrc))
 - Docker and Docker Compose
 - Python 3.13 (for backend development)
 - An OpenRouter API key for AI features (stored on backend only)
 
-### Repository layout (MVP focus)
-- Frontend: `src_mvp/frontend`
+### Repository layout (PoC focus)
+- Frontend: `src_poc/frontend`
 - Documentation: `doc/stack.md`, `doc/prd.md`
-- Backend and Docker assets: planned as part of MVP; ensure Compose configuration matches the stack in [doc/stack.md](doc/stack.md).
+- Backend and Docker assets: planned as part of PoC; ensure Compose configuration matches the stack in [doc/stack.md](doc/stack.md).
 
 ### Setup
 
@@ -86,7 +86,7 @@ cd 10xCards
 
 2) Frontend environment
 ```bash
-cd src_mvp/frontend
+cd src_poc/frontend
 nvm use
 npm install
 ```
@@ -110,7 +110,7 @@ docker compose up -d
 - Apply database migrations as defined in the backend project (scripts TBD).
 
 5) Linting
-From `src_mvp/frontend`:
+From `src_poc/frontend`:
 ```bash
 npm run lint
 ```
@@ -122,7 +122,7 @@ npm run lint
 
 ## Available scripts
 
-### Frontend (`src_mvp/frontend/package.json`)
+### Frontend (`src_poc/frontend/package.json`)
 - `dev`: Start Next.js in development mode
   ```bash
   npm run dev
@@ -149,14 +149,14 @@ npm run lint
 
 ## Project scope
 
-### In scope (MVP)
+### In scope (PoC)
 - Parser: fetch article by URL, longest‑text‑block heuristic with `<article>` fallback, paywall awareness, Spanish text focus.
 - AI generation: proficiency filtering (A1–C2), global deduplication per user, card structure (front/back/context), context soft limit 500 chars, auto tags (POS/tense/mood/domain), per‑import session grouping.
 - Card management: manual create/edit/delete, bulk accept/reject, browse with filters and search.
 - Repetition: simple Leitner algorithm, stats table, scheduling, progress tracking.
 - Auth: single password, hashed, HTTP‑only session, no registration.
 
-### Out of scope (MVP)
+### Out of scope (PoC)
 - Advanced SRS algorithms (e.g., SuperMemo/Anki)
 - Multi‑format imports (PDF/DOCX/etc.)
 - Sharing sets, external platform integrations
@@ -177,16 +177,16 @@ npm run lint
 ### Roadmap and phases
 - **Phase 1** (Weeks 1–4): Parser + LLM + basic frontend
 - **Phase 2** (Weeks 5–6): Spaced repetition system
-- **Phase 3** (post‑MVP): spaCy integrations, improved frontend (React 19), production hardening
+- **Phase 3** (post‑PoC): spaCy integrations, improved frontend (React 19), production hardening
 
 ### Quality gates and metrics
 - ≥ 50% test coverage (backend via PyTest, frontend via Jest)
-- Stability: no critical MVP bugs, ≤ 5% generation errors, 24h stable runtime
+- Stability: no critical PoC bugs, ≤ 5% generation errors, 24h stable runtime
 - Performance: backend average response < 400 ms
 
 ### Current versions
 - Frontend: Next 14.0.3, React 18.2, TypeScript ^5.3.2, ESLint ^8.54.0
-- Node: 22.14.0 ([.nvmrc](src_mvp/frontend/.nvmrc))
+- Node: 22.14.0 ([.nvmrc](src_poc/frontend/.nvmrc))
 
 ### Documentation
 - Product requirements: [doc/prd.md](doc/prd.md)
@@ -199,7 +199,7 @@ This project's license is not specified yet. Add a LICENSE file and update this 
 - Badge: ![MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 ### Badges (optional placeholders)
-- Status: MVP in progress
+- Status: PoC in progress
 - Version: 0.1.0 (frontend package)
 - CI: GitHub Actions (to be configured)
 

@@ -84,7 +84,7 @@ Opisany w dokumencie @stack.md
 ### 4.2 Ograniczenia wydajnościowe
 - Maksymalnie 100,000 fiszek w bazie danych
 - Jeden użytkownik systemu
-- CRUD <400 ms, operacje AI/parsing asynchronicznie z timeout 10s
+- CRUD <400 ms, operacje AI/parsing asynchronicznie z timeout 30s
 - Lokalne uruchomienie w środowisku Docker
 
 ### 4.3 Ograniczenia funkcjonalne
