@@ -341,6 +341,7 @@ async def get_next_review(
             card=ReviewCardData(
                 id=str(card.id),
                 front=card.front,
+                back=card.back,
                 context=card.context or ""
             ),
             has_more=True

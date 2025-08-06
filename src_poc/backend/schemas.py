@@ -51,6 +51,7 @@ class AcceptCardsResponse(BaseModel):
 class ReviewCardData(BaseModel):
     id: str
     front: str
+    back: str
     context: str
 
 class NextCardResponse(BaseModel):

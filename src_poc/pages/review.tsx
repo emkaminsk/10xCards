@@ -96,7 +96,7 @@ export default function Review() {
         <div id="review-actions">
           <button 
             class="button" 
-            onclick="showAnswer('${card.id}')"
+            onclick="showAnswer('${card.id}', '${card.back.replace(/'/g, '&#39;').replace(/"/g, '&quot;')}')"
             style="font-size: 1.1rem; padding: 1rem 2rem;"
           >
             Mostrar Respuesta
@@ -110,11 +110,13 @@ export default function Review() {
   useEffect(() => {
     ;(window as any).loadNextCard = loadNextCard
 
-    ;(window as any).showAnswer = async (cardId: string) => {
+    ;(window as any).showAnswer = async (cardId: string, cardBack: string) => {
       const actionsDiv = document.getElementById('review-actions')
       if (!actionsDiv) return
 
-      // For now, we'll show placeholder answer since the API doesn't return the back
+      // Decode HTML entities back to readable text
+      const decodedBack = cardBack.replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+
       actionsDiv.innerHTML = `
         <div style="
           background: #f0fdf4; 
@@ -124,9 +126,9 @@ export default function Review() {
           margin-bottom: 2rem;
           font-size: 1.1rem;
         ">
-          <p style="color: #6b7280; font-style: italic;">
-            [La respuesta se mostraría aquí - necesitamos ajustar el API para incluir el 'back']
-          </p>
+          <div style="color: #065f46; font-weight: 500;">
+            ${decodedBack}
+          </div>
         </div>
 
         <div class="review-buttons">
