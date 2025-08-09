@@ -84,3 +84,9 @@ coverage/
 
 # Tool-specific directories (keep .cursor rules as exception)
 .bolt/
+
+# Environment variables
+.env.keys
+.env.local
+.env.*.local
+.env
