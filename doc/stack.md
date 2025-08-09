@@ -9,7 +9,7 @@
 
 ## Backend - złożone kompleksowe rozwiązanie:
 
-- baza danych PostgreSQL. Schemat DB (tabele cards, reviews, boxes, stats).
+- baza danych Supabase/PostgreSQL. Schemat DB (tabele cards, reviews, boxes, stats).
 - NLP robiony hybrydowo z wykorzystaniem spaCy oraz LLM (w razie potrzeby)
 - backend w Python 3.13 z FastAPI, Pydantic
 - parser treści z internetu: Python (httpx + selectolax/readability + timeouts + SSRF guard).
