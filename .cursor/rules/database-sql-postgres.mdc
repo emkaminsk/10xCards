@@ -1,5 +1,5 @@
 ---
-globs: *.py
+globs: *.py,*.md,*.ts,*.tsx
 alwaysApply: false
 ---
 ## DATABASE

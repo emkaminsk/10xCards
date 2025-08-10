@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Tech Stack
 - **Frontend**: React with functional components and hooks
 - **Backend**: FastAPI (Python) with async endpoints
-- **Database**: PostgreSQL
+- **Database**: Supabase with PostgreSQL
 - **Deployment**: Docker Compose
 - **Language Processing**: spaCy (es_core_news_sm model)
 
